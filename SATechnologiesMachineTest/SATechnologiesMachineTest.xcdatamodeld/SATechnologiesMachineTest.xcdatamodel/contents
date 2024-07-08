@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="AnswerChoiceEntity" representedClassName="AnswerChoiceEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="question" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuestionsEntity" inverseName="answerChoices" inverseEntity="QuestionsEntity"/>
+    </entity>
+    <entity name="InspectionAreaEntity" representedClassName="InspectionAreaEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="InspectionEntity" representedClassName="InspectionEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="inspectionArea" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="InspectionAreaEntity"/>
+        <relationship name="inspectionType" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="InspectionTypeEntity"/>
+        <relationship name="surveyCategory" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SurveyCategoryEntity"/>
+    </entity>
+    <entity name="InspectionTypeEntity" representedClassName="InspectionTypeEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="access" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="QuestionsEntity" representedClassName="QuestionsEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="selectedAnswerChoiceId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="answerChoices" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="AnswerChoiceEntity" inverseName="question" inverseEntity="AnswerChoiceEntity"/>
+        <relationship name="surveyCategory" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SurveyCategoryEntity" inverseName="questions" inverseEntity="SurveyCategoryEntity"/>
+    </entity>
+    <entity name="SurveyCategoryEntity" representedClassName="SurveyCategoryEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="questions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="QuestionsEntity" inverseName="surveyCategory" inverseEntity="QuestionsEntity"/>
+    </entity>
+</model>

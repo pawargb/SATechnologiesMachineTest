@@ -1,0 +1,8 @@
+//
+//  GenericAPIResponse.swift
+//  SATechnologiesMachineTest
+//
+//  Created by Ganesh Pawar on 07/07/24.
+//
+
+import Foundation
