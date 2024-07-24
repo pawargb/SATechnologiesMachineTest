@@ -13,7 +13,7 @@ class HomeViewController: UIViewController {
     
     @IBOutlet weak var inspectionStatusSegmentedControl: UISegmentedControl!
     @IBOutlet weak var inspectionListTableView: UITableView!
-    @IBOutlet weak var startInspectionButton: UIButton!
+   
     
     let viewModel = HomeViewModel()
     
@@ -27,8 +27,15 @@ class HomeViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logout))
         
         navigationItem.title = "Inspections"
+        inspectionListTableView.register(UINib(nibName: "InspectionListTableViewCell", bundle: nil), forCellReuseIdentifier: "InspectionListTableViewCell")
+        fetchInspectionFromDB()
+        setNameForSegment()
+    }
+    
+    func fetchInspectionFromDB() {
         
-        refresh()
+        viewModel.fetchInspectionFromDB()
+        inspectionListTableView.reloadData()
     }
     
     //MARK: - IBActions
@@ -36,34 +43,29 @@ class HomeViewController: UIViewController {
     @IBAction func segmentedControlClicked(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            print("New")
             addRefreshButton()
-            startInspectionButton.isHidden = false
+            reloadTable(with: .new)
         case 1:
-            print("In Progress")
             navigationItem.leftBarButtonItem = nil
-            startInspectionButton.isHidden = true
+            reloadTable(with: .inProgress)
         default:
-            print("completed")
             navigationItem.leftBarButtonItem = nil
-            startInspectionButton.isHidden = true
+            reloadTable(with: .completed)
         }
     }
     
-    @IBAction func startButtonClicked(_ sender: Any) {
-        let main = UIStoryboard(name: "Main", bundle: nil)
-        if let inspectionViewController = storyboard?.instantiateViewController(withIdentifier: Constant.ViewControllerNames.inspectionViewController) as? InspectionViewController {
-            inspectionViewController.viewModel.inpsection = viewModel.inpsection
-            navigationController?.pushViewController(inspectionViewController, animated: true)
-        }
+    func reloadTable(with filter: InspectionStatus) {
+        viewModel.selectedInspectionFilter = filter
+        inspectionListTableView.reloadData()
     }
     
     //MARK: - API calls
     @objc func refresh() {
-        viewModel.refreshInspectionAPI { result in
+        viewModel.refreshInspectionAPI { [weak self] result in
             switch result {
             case .success:
-                print("data received")
+                self?.setNameForSegment()
+                self?.inspectionListTableView.reloadData()
             case .failure(let error):
                 CustomAlertController.present(title: "Error", message: error.localizedDescription)
             }
@@ -92,16 +94,44 @@ class HomeViewController: UIViewController {
 
 extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        0
+        viewModel.filteredArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: Constant.CellIdentifier.inspectionListTableViewCell, for: indexPath) as? InspectionListTableViewCell {
+            let inspection = viewModel.filteredArray[indexPath.row]
+            cell.setData(inspectionArea: inspection.inspectionArea?.name, inspectionType: inspection.inspectionType?.name)
             return cell
         }
         
         return UITableViewCell()
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let main = UIStoryboard(name: "Main", bundle: nil)
+        if let inspectionViewController = main.instantiateViewController(withIdentifier: Constant.ViewControllerNames.inspectionViewController) as? InspectionViewController {
+            
+            let inspection = viewModel.filteredArray[indexPath.row]
+            inspectionViewController.viewModel.inspection = inspection
+            if inspection.status == InspectionStatus.new.rawValue {
+                inspection.status = InspectionStatus.inProgress.rawValue
+                CoreDataManager.shared.saveContext()
+                
+                viewModel.filteredArray.remove(at: indexPath.row)
+                inspectionListTableView.deleteRows(at: [indexPath], with: .fade)
+                setNameForSegment()
+            }
+            inspectionViewController.inspectionSubmitted = {
+                self.reloadTable(with: self.viewModel.selectedInspectionFilter)
+                self.setNameForSegment()
+            }
+            navigationController?.pushViewController(inspectionViewController, animated: true)
+        }
+    }
     
+    func setNameForSegment() {
+        inspectionStatusSegmentedControl.setTitle("New (\(viewModel.getCount(for: .new)))", forSegmentAt: 0)
+        inspectionStatusSegmentedControl.setTitle("In Progress (\(viewModel.getCount(for: .inProgress)))", forSegmentAt: 1)
+        inspectionStatusSegmentedControl.setTitle("Completed (\(viewModel.getCount(for: .completed)))", forSegmentAt: 2)
+    }
 }

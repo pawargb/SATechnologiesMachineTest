@@ -9,6 +9,10 @@ import UIKit
 
 class InspectionListTableViewCell: UITableViewCell {
 
+    
+    @IBOutlet weak var inspectionAreaLabel: UILabel!
+    @IBOutlet weak var inspectionTypeLabel: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -19,5 +23,8 @@ class InspectionListTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-    
+    func setData(inspectionArea: String?, inspectionType: String?){
+        inspectionAreaLabel.text = inspectionArea
+        inspectionTypeLabel.text = inspectionType
+    }
 }

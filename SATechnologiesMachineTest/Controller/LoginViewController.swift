@@ -36,6 +36,7 @@ class LoginViewController: UIViewController {
             isLogInSelected = false
             loginButton.setTitle(Constant.TitleString.signUp, for: .normal)
         }
+        clearTextField()
     }
     
     
@@ -72,7 +73,8 @@ class LoginViewController: UIViewController {
         self.viewModel.signUpAPI(signUpDetails: signUpDetails) { result in
             switch result {
             case .success:
-                print("Sign up success")
+                CustomAlertController.present(title: "Success", message: "Account created Successfully")
+                self.clearTextField()
             case .failure(let error):
                 CustomAlertController.present(title: "Error", message: error.localizedDescription)
             }
@@ -95,6 +97,11 @@ class LoginViewController: UIViewController {
                 CustomAlertController.present(title: "Error", message: error.localizedDescription)
             }
         }
+    }
+    
+    func clearTextField() {
+        emailTextField.text = nil
+        passwordTextField.text = nil
     }
 }
 

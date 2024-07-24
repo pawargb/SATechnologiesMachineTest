@@ -14,7 +14,7 @@ enum APIMethods: String {
 
 class APIManager {
     
-    static func postAction(url: String, parameters: APIRequest?, apiMethod: APIMethods, completion: ((Data?, URLResponse?, Error?) -> Void)?)  {
+    static func postAction(url: String, parameters: Codable?, apiMethod: APIMethods, completion: ((Data?, URLResponse?, Error?) -> Void)?)  {
         
         let fullURL = Constant.url.baseURL + url
         let Url = String(format: fullURL)

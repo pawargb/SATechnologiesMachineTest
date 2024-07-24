@@ -12,6 +12,8 @@
     </entity>
     <entity name="InspectionEntity" representedClassName="InspectionEntity" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="inspectionArea" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="InspectionAreaEntity"/>
         <relationship name="inspectionType" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="InspectionTypeEntity"/>
         <relationship name="surveyCategory" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SurveyCategoryEntity"/>
